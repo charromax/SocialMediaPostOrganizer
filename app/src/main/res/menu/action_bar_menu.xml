@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/read_file"
+        android:icon="@drawable/ic_baseline_attach_file_24"
+        android:title="Importar Articulos"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/sort_order"
+        android:icon="@drawable/ic_sort"
+        android:title="Ordenar"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/action_sort_by_name"
+                android:title="Ordenar por Nombre"/>
+            <item
+                android:id="@+id/action_sort_by_date"
+                android:title="Ordenar por Fecha"/>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/add_collection"
+        android:icon="@drawable/ic_baseline_create_new_folder_24"
+        android:title="Coleccion +"
+        app:showAsAction="ifRoom"/>
+</menu>

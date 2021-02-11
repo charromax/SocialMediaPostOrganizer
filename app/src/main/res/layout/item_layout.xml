@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TextView style="@style/TextAppearance.MaterialComponents.Headline6"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/text1"
+    android:background="@drawable/collection_article"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="16dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:text="telas"
+    android:paddingVertical="2dp"
+    android:textColor="#f4f4f4"
+    android:layout_margin="8dp"/>

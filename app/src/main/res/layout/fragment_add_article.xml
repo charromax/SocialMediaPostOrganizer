@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/purple_200">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="80dp">
+
+        <EditText
+            android:id="@+id/article_name_text"
+            style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:inputType="text"
+            android:background="@drawable/collection_article"
+            android:backgroundTint="@color/off_white"
+            android:hint="Nombre del articulo"
+            android:padding="16dp"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/categories_spin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@drawable/dialog_background"
+            android:padding="4dp"
+            android:spinnerMode="dropdown"
+            android:backgroundTint="@color/off_white"
+            app:layout_constraintStart_toStartOf="@+id/article_name_text"
+            app:layout_constraintTop_toBottomOf="@+id/article_name_text" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/save_article"
+        android:backgroundTint="@color/purple_500"
+        android:layout_gravity="bottom|end"
+        android:src="@drawable/ic_add"
+        android:layout_margin="16dp"
+        android:layout_marginTop="100dp"
+        android:contentDescription="guardar articulo nuevo" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

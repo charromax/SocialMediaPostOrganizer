@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/coleccionesFragment">
+
+    <fragment
+        android:id="@+id/coleccionesFragment"
+        android:name="com.example.posteosdeig.ui.colecciones.ColeccionesFragment"
+        tools:layout="@layout/fragment_collections"
+        android:label="ColeccionesFragment" >
+        <action
+            android:id="@+id/action_coleccionesFragment_to_add_collection_dialog"
+            app:destination="@id/add_collection_dialog" />
+        <action
+            android:id="@+id/action_coleccionesFragment_to_add_article_dialog"
+            app:destination="@id/add_article_dialog" />
+    </fragment>
+    <dialog
+        android:id="@+id/add_article_dialog"
+        android:name="com.example.posteosdeig.ui.colecciones.AddArticleDialogFragment"
+        tools:layout="@layout/fragment_add_article" />
+
+    <dialog
+        android:id="@+id/add_collection_dialog"
+        android:name="com.example.posteosdeig.ui.colecciones.AddCollectionDialogFragment"
+        tools:layout="@layout/fragment_add_collection"/>
+
+</navigation>
