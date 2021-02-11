@@ -13,6 +13,7 @@ import com.example.posteosdeig.data.model.Articulo
 import com.example.posteosdeig.data.model.Coleccion
 import com.example.posteosdeig.databinding.FragmentAddCollectionBinding
 import com.example.posteosdeig.util.Categories
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.DateFormat
 
@@ -63,6 +64,12 @@ class AddCollectionDialogFragment: DialogFragment(R.layout.fragment_add_collecti
                     val updateArticulo = it.copy(collectionId = coleccion.id)
                     viewModel.addArticleToCollection(updateArticulo)
                 }
+                collectionNameText.setText("")
+                Snackbar.make(
+                    view,
+                    "Coleccion ${coleccion.name} guardada con exito!",
+                    Snackbar.LENGTH_LONG
+                ).show()
             }
 
         }

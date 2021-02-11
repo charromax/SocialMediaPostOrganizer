@@ -82,6 +82,9 @@ dependencies {
 
     // DataStore
     implementation "androidx.datastore:datastore-preferences:$dataStoreVersion"
+
+    // Recyclerview Decorator
+    implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.3'
 }
 
 kapt {
