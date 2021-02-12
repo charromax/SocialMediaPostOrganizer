@@ -29,6 +29,9 @@ interface ArticlesDao {
     @Query("SELECT * FROM article_table WHERE category=:category AND collectionId = ''")
     fun getAllArticlesForCategory(category: String): Flow<List<Articulo>>
 
+    @Query("SELECT * FROM article_table WHERE collectionId = ''")
+    fun getAllArticlesAvailable(): Flow<List<Articulo>>
+
     @Update
     suspend fun addArticleToCollection(article: Articulo)
 

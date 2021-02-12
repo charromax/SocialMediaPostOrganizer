@@ -3,13 +3,11 @@ package com.example.posteosdeig.ui.colecciones
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.core.content.ContentResolverCompat
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.posteosdeig.data.ArticlesDao
-import com.example.posteosdeig.data.FilterPreferences
 import com.example.posteosdeig.data.PreferencesManager
 import com.example.posteosdeig.data.SortOrder
 import com.example.posteosdeig.data.model.Articulo
@@ -18,7 +16,6 @@ import com.example.posteosdeig.data.model.ColeccionWithArticulos
 import com.example.posteosdeig.util.Categories
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import java.io.BufferedReader
@@ -69,7 +66,11 @@ class ColeccionesViewModel @ViewModelInject constructor(
     }
 
     fun getAllAvailableArticles(category: Categories): Flow<List<Articulo>> {
-            return articlesDao.getAllArticlesForCategory(category.name)
+        return if (category != Categories.TODAS) {
+            articlesDao.getAllArticlesForCategory(category.name)
+        } else {
+            articlesDao.getAllArticlesAvailable()
+        }
     }
 
     fun saveNewCollection(coleccion: Coleccion) = viewModelScope.launch {

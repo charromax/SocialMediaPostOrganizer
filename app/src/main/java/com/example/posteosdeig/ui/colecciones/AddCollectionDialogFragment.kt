@@ -28,7 +28,7 @@ class AddCollectionDialogFragment: DialogFragment(R.layout.fragment_add_collecti
         super.onViewCreated(view, savedInstanceState)
         val binding= FragmentAddCollectionBinding.bind(view)
         viewModel.getAllAvailableArticles(Categories.MODA)
-        articulosAdapter = AvailableArticulosAdapter(this)
+        articulosAdapter = AvailableArticulosAdapter(this, requireContext())
 
         with(binding) {
             availableArticlesList.apply {
@@ -36,7 +36,11 @@ class AddCollectionDialogFragment: DialogFragment(R.layout.fragment_add_collecti
                 layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             }
             categoriesSpin.adapter =
-                ArrayAdapter<Categories>(requireContext(), R.layout.item_layout, Categories.values())
+                ArrayAdapter<Categories>(
+                    requireContext(),
+                    android.R.layout.simple_spinner_dropdown_item,
+                    Categories.values()
+                )
             viewModel.availableArticles.observe(viewLifecycleOwner, Observer {
                 articulosAdapter.submitList(it)
             })

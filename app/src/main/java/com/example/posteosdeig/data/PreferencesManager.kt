@@ -9,7 +9,6 @@ import com.example.posteosdeig.util.Categories
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import java.io.IOError
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -38,7 +37,7 @@ class PreferencesManager @Inject constructor(@ApplicationContext context: Contex
                 prefs[PreferencesKeys.SORT_ORDER] ?: SortOrder.BY_DATE.name
             )
             val selectedCategory = Categories.valueOf(
-                prefs[PreferencesKeys.SELECTED_CATEGORY] ?: Categories.MODA.name
+                prefs[PreferencesKeys.SELECTED_CATEGORY] ?: Categories.TODAS.name
             )
             FilterPreferences(sortOrder, selectedCategory)
         }

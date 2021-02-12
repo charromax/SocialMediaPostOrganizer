@@ -1,20 +1,28 @@
 package com.example.posteosdeig.ui.colecciones
 
+import android.content.Context
+import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.posteosdeig.data.model.Articulo
 import com.example.posteosdeig.databinding.ItemLayoutBinding
+import com.example.posteosdeig.util.Categories
 
-class AvailableArticulosAdapter(private val listener: OnClickListener): ListAdapter<Articulo, AvailableArticulosAdapter.AvailableArticulosViewHolder>(ArticleCallback()) {
+class AvailableArticulosAdapter(
+    private val listener: OnClickListener,
+    private val context: Context
+) : ListAdapter<Articulo, AvailableArticulosAdapter.AvailableArticulosViewHolder>(ArticleCallback()) {
 
-    inner class AvailableArticulosViewHolder(private val binding: ItemLayoutBinding): RecyclerView.ViewHolder(binding.root){
+    inner class AvailableArticulosViewHolder(private val binding: ItemLayoutBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         init {
             binding.apply {
-                root.setOnClickListener{
+                root.setOnClickListener {
                     val position = adapterPosition
                     if (position != RecyclerView.NO_POSITION) {
                         listener.onArticleSelected(getItem(position), position)
@@ -27,6 +35,12 @@ class AvailableArticulosAdapter(private val listener: OnClickListener): ListAdap
         fun bind(articulo: Articulo) {
             binding.apply {
                 text1.text = articulo.title
+                text1.background.setColorFilter(
+                    ContextCompat.getColor(
+                        context,
+                        Categories.valueOf(articulo.category).color
+                    ), PorterDuff.Mode.SRC_ATOP
+                )
             }
         }
 
