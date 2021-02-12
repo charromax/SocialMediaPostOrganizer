@@ -1,4 +1,4 @@
-package com.example.posteosdeig.ui.colecciones
+package com.example.posteosdeig.ui.addarticulo
 
 import android.content.Context
 import android.graphics.PorterDuff

@@ -1,4 +1,4 @@
-package com.example.posteosdeig.ui.colecciones
+package com.example.posteosdeig.ui.addeditcoleccion
 
 import android.os.Bundle
 import android.util.Log
@@ -8,24 +8,25 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.posteosdeig.R
 import com.example.posteosdeig.data.model.Articulo
-import com.example.posteosdeig.data.model.Coleccion
 import com.example.posteosdeig.databinding.FragmentAddCollectionBinding
 import com.example.posteosdeig.util.Categories
+import com.example.posteosdeig.util.exhaustive
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.DateFormat
+import kotlinx.coroutines.flow.collect
 
 
 @AndroidEntryPoint
-class AddCollectionDialogFragment : Fragment(R.layout.fragment_add_collection),
+class AddCollectionFragment : Fragment(R.layout.fragment_add_collection),
     AvailableArticulosAdapter.OnClickListener {
 
     private val _TAG = "ADDCOLLECTION"
-    private val viewModel: ColeccionesViewModel by viewModels()
+    private val viewModel: AddEditCollectionViewModel by viewModels()
     private var articlesList = arrayListOf<Articulo>()
     private lateinit var availableArticulosAdapter: AvailableArticulosAdapter
     private lateinit var selectedArticulosAdapter: AvailableArticulosAdapter
@@ -55,8 +56,21 @@ class AddCollectionDialogFragment : Fragment(R.layout.fragment_add_collection),
             viewModel.availableArticles.observe(viewLifecycleOwner, Observer {
                 availableArticulosAdapter.submitList(it)
             })
+            binding.apply {
+                collectionNameText.setText(viewModel.colName)
+                creationDateText.text = viewModel.dateCreated
+            }
+            selectedArticulosAdapter.updateList(viewModel.articlesInCollection)
+            viewModel.onReleaseArticles(viewModel.articlesInCollection)
+            articlesList.addAll(viewModel.articlesInCollection)
+
             categoriesSpin.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, p3: Long) {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    p3: Long
+                ) {
                     if (parent != null) {
                         viewModel.onCategorySelected(parent.getItemAtPosition(position) as Categories)
                         availableArticulosAdapter.notifyDataSetChanged()
@@ -67,27 +81,40 @@ class AddCollectionDialogFragment : Fragment(R.layout.fragment_add_collection),
                 }
 
             }
-            creationDateText.text = "Coleccion creada el ${DateFormat.getDateTimeInstance().format(System.currentTimeMillis())}"
-            saveCollection.setOnClickListener{
-                val coleccion = Coleccion(
-                    name = binding.collectionNameText.text.toString().trim()
-                )
-
-                viewModel.saveNewCollection(coleccion)
-                articlesList.map {
-                    val updateArticulo = it.copy(collectionId = coleccion.id)
-                    viewModel.addArticleToCollection(updateArticulo)
-                }
+            saveCollection.setOnClickListener {
                 collectionNameText.setText("")
                 selectedArticulosAdapter.clearList()
-                Snackbar.make(
-                    view,
-                    "Coleccion ${coleccion.name} guardada con exito!",
-                    Snackbar.LENGTH_LONG
-                ).show()
+                viewModel.onSaveClick(articlesList)
             }
-
         }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.colEvents.collect { event ->
+                when (event) {
+                    AddEditCollectionViewModel.AddColeccionesEvents.ArticlesReleasedWarning -> {
+                        Snackbar.make(
+                            binding.root,
+                            "Articulos liberados, guardar antes de salir",
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
+                    is AddEditCollectionViewModel.AddColeccionesEvents.CollectionSavedMessage -> {
+                        Snackbar.make(
+                            binding.root,
+                            "${event.coleccion.name} guardada exitosamente!",
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
+                    AddEditCollectionViewModel.AddColeccionesEvents.ShowNoTitleMessage -> {
+                        Snackbar.make(
+                            binding.root,
+                            "No olvides ponerle nombre!",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                }.exhaustive
+            }
+        }
+
     }
 
     override fun onArticleSelected(articulo: Articulo, position: Int, parentId: Int) {

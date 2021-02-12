@@ -1,4 +1,4 @@
-package com.example.posteosdeig.ui.colecciones
+package com.example.posteosdeig.ui.addeditcoleccion
 
 import android.content.Context
 import android.graphics.PorterDuff
@@ -75,6 +75,13 @@ class AvailableArticulosAdapter(
         val newList = ArrayList<Articulo>(currentList)
         newList.add(articulo)
         submitList(newList)
+        notifyDataSetChanged()
+    }
+
+    fun updateList(list: List<Articulo>) {
+        val newList = ArrayList<Articulo>(list)
+        submitList(newList)
+        notifyDataSetChanged()
     }
 
     interface OnClickListener {

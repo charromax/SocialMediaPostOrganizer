@@ -12,6 +12,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,13 +21,16 @@ import com.example.posteosdeig.R
 import com.example.posteosdeig.data.SortOrder
 import com.example.posteosdeig.data.model.ColeccionWithArticulos
 import com.example.posteosdeig.databinding.FragmentCollectionsBinding
+import com.example.posteosdeig.util.exhaustive
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
+import kotlinx.coroutines.flow.collect
 
 
 @AndroidEntryPoint
-class ColeccionesFragment : Fragment(R.layout.fragment_collections) {
+class ColeccionesFragment : Fragment(R.layout.fragment_collections),
+    ColeccionesAdapter.OnClickListener {
     private val REQUEST_CODE = 101
     private val viewModel: ColeccionesViewModel by viewModels()
     private var removedPosition = 0
@@ -35,7 +39,7 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentCollectionsBinding.bind(view)
-        val coleccionesAdapter = ColeccionesAdapter(requireContext())
+        val coleccionesAdapter = ColeccionesAdapter(requireContext(), this)
 
         binding.apply {
             collectionsList.apply {
@@ -62,34 +66,15 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections) {
                 val col = coleccionesAdapter.currentList[viewHolder.adapterPosition]
 
                 if (direction == ItemTouchHelper.RIGHT) {
-                    removedCol = col
-                    removedPosition = viewHolder.adapterPosition
                     viewModel.onDeleteCollection(col)
-                    coleccionesAdapter.notifyItemRemoved(removedPosition)
-                    Snackbar.make(
-                        viewHolder.itemView,
-                        "${col.coleccion.name} borrada!",
-                        Snackbar.LENGTH_LONG
-                    ).setAction("Deshacer") {
-                        //TODO: add col back in DB and update articles with col_id
-                        removedCol?.let {
-                            viewModel.saveNewCollection(it.coleccion)
-                            viewModel.addArticlesBackInCollection(it)
-                        }
-                    }.show()
+                    coleccionesAdapter.notifyItemRemoved(viewHolder.adapterPosition)
 
                 } else if (direction == ItemTouchHelper.LEFT) {
                     removedCol = col
                     removedPosition = viewHolder.adapterPosition
                     viewModel.onReleaseArticles(col)
                     coleccionesAdapter.notifyItemChanged(removedPosition)
-                    Snackbar.make(
-                        viewHolder.itemView,
-                        "${col.coleccion.name} Articulos liberados!",
-                        Snackbar.LENGTH_LONG
-                    ).setAction("Deshacer") {
-                        removedCol?.let { viewModel.addArticlesBackInCollection(it) }
-                    }.show()
+
                 }
             }
 
@@ -144,6 +129,45 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections) {
         binding.addArticle.setOnClickListener(View.OnClickListener {
             findNavController().navigate(R.id.add_article_dialog)
         })
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.colEvents.collect { event ->
+                when (event) {
+
+                    is ColeccionesViewModel.ColeccionesEvents.ShowUndoDeleteCollectionMessage -> {
+                        Snackbar.make(
+                            binding.root,
+                            "${event.col.coleccion.name} borrada!",
+                            Snackbar.LENGTH_LONG
+                        ).setAction("Deshacer") {
+                            viewModel.onUndoDelete(event.col)
+                        }.show()
+                    }
+
+                    is ColeccionesViewModel.ColeccionesEvents.ShowUndoFreeArticlesMessage -> {
+                        Snackbar.make(
+                            binding.root,
+                            "${event.col.coleccion.name} Articulos liberados!",
+                            Snackbar.LENGTH_LONG
+                        ).setAction("Deshacer") {
+                            viewModel.addArticlesBackInCollection(event.col)
+                        }.show()
+                    }
+                    is ColeccionesViewModel.ColeccionesEvents.NavigateToAddCollectionFragment -> {
+                        val action =
+                            ColeccionesFragmentDirections.actionColeccionesFragmentToAddCollection()
+                        findNavController().navigate(action)
+                    }
+                    is ColeccionesViewModel.ColeccionesEvents.NavigateToEditCollectionFragment -> {
+                        val action =
+                            ColeccionesFragmentDirections.actionColeccionesFragmentToAddCollection(
+                                event.col
+                            )
+                        findNavController().navigate(action)
+                    }
+                }.exhaustive
+            }
+        }
     }
 
 
@@ -157,7 +181,7 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.add_collection -> {
-                findNavController().navigate(R.id.add_collection)
+                viewModel.onAddNewCollectionClick()
                 true
             }
             R.id.read_file -> {
@@ -204,5 +228,9 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections) {
             }
 
         }
+    }
+
+    override fun onCollectionSelected(coleccionWithArticulos: ColeccionWithArticulos) {
+        viewModel.onCollectionSelected(coleccionWithArticulos)
     }
 }

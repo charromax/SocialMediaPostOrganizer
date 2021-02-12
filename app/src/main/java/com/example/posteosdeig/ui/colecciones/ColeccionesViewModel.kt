@@ -13,10 +13,10 @@ import com.example.posteosdeig.data.SortOrder
 import com.example.posteosdeig.data.model.Articulo
 import com.example.posteosdeig.data.model.Coleccion
 import com.example.posteosdeig.data.model.ColeccionWithArticulos
-import com.example.posteosdeig.util.Categories
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.IOException
@@ -26,34 +26,38 @@ const val TAG = "VIEWMODEL"
 class ColeccionesViewModel @ViewModelInject constructor(
     private val articlesDao: ArticlesDao,
     private val preferencesManager: PreferencesManager,
-
     @ApplicationContext private val applicationContext: Context
 
     ) : ViewModel() {
     private val prefs = preferencesManager.preferencesFlow
-    private var availableArticlesFlow : Flow<List<Articulo>> = prefs.flatMapLatest { getAllAvailableArticles(it.category) }
-    private val coleccionesFlow = prefs.flatMapLatest { articlesDao.getSortedCollectionsWithArticles(it.order) }
+    private val coleccionesFlow =
+        prefs.flatMapLatest { articlesDao.getSortedCollectionsWithArticles(it.order) }
     val colecciones = coleccionesFlow.asLiveData()
-    val availableArticles = availableArticlesFlow.asLiveData()
 
+    private val coleccionesEventChannel = Channel<ColeccionesEvents>()
+    val colEvents = coleccionesEventChannel.receiveAsFlow()
 
     fun onSortOrderSelected(sortOrder: SortOrder) = viewModelScope.launch {
         preferencesManager.updateSortOrder(sortOrder)
     }
-    fun onCategorySelected(category: Categories) = viewModelScope.launch {
-        preferencesManager.updateCategory(category)
-    }
 
-    fun onDeleteCollection(col:ColeccionWithArticulos) = viewModelScope.launch {
-        onReleaseArticles(col)
+    fun onDeleteCollection(col: ColeccionWithArticulos) = viewModelScope.launch {
+        onReleaseArticles(col, false)
         articlesDao.deleteCollection(col.coleccion)
+        coleccionesEventChannel.send(ColeccionesEvents.ShowUndoDeleteCollectionMessage(col))
     }
 
-    fun onReleaseArticles(col:ColeccionWithArticulos) = viewModelScope.launch {
-        col.article.map {
-            articlesDao.removeFromCollection(it.copy(collectionId = ""))
+    fun onReleaseArticles(col: ColeccionWithArticulos, shouldShow: Boolean = true) =
+        viewModelScope.launch {
+            col.article.map {
+                articlesDao.removeFromCollection(it.copy(collectionId = ""))
+            }
+            if (shouldShow) coleccionesEventChannel.send(
+                ColeccionesEvents.ShowUndoFreeArticlesMessage(
+                    col
+                )
+            )
         }
-    }
 
     fun addArticlesBackInCollection(col:ColeccionWithArticulos) = viewModelScope.launch {
         col.article.map {
@@ -65,20 +69,8 @@ class ColeccionesViewModel @ViewModelInject constructor(
         articlesDao.insertArt(articulo)
     }
 
-    fun getAllAvailableArticles(category: Categories): Flow<List<Articulo>> {
-        return if (category != Categories.TODAS) {
-            articlesDao.getAllArticlesForCategory(category.name)
-        } else {
-            articlesDao.getAllArticlesAvailable()
-        }
-    }
-
-    fun saveNewCollection(coleccion: Coleccion) = viewModelScope.launch {
+    private fun saveNewCollection(coleccion: Coleccion) = viewModelScope.launch {
         articlesDao.insertCol(coleccion)
-    }
-
-    fun addArticleToCollection(articulo: Articulo) = viewModelScope.launch {
-        articlesDao.addArticleToCollection(articulo)
     }
 
     private fun getListData(uri: Uri): List<String>? {
@@ -103,7 +95,30 @@ class ColeccionesViewModel @ViewModelInject constructor(
         return true
     }
 
+    fun onUndoDelete(col: ColeccionWithArticulos) {
+        saveNewCollection(col.coleccion)
+        addArticlesBackInCollection(col)
+    }
 
+    fun onAddNewCollectionClick() = viewModelScope.launch {
+        coleccionesEventChannel.send(ColeccionesEvents.NavigateToAddCollectionFragment)
+    }
+
+    fun onCollectionSelected(col: ColeccionWithArticulos) = viewModelScope.launch {
+        coleccionesEventChannel.send(ColeccionesEvents.NavigateToEditCollectionFragment(col))
+    }
+
+    sealed class ColeccionesEvents {
+        data class ShowUndoFreeArticlesMessage(val col: ColeccionWithArticulos) :
+            ColeccionesEvents()
+
+        data class ShowUndoDeleteCollectionMessage(val col: ColeccionWithArticulos) :
+            ColeccionesEvents()
+
+        object NavigateToAddCollectionFragment : ColeccionesEvents()
+        data class NavigateToEditCollectionFragment(val col: ColeccionWithArticulos) :
+            ColeccionesEvents()
+    }
 
 }
 

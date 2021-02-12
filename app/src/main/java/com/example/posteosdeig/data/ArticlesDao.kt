@@ -32,6 +32,10 @@ interface ArticlesDao {
     @Query("SELECT * FROM article_table WHERE collectionId = ''")
     fun getAllArticlesAvailable(): Flow<List<Articulo>>
 
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertArt(article: Articulo)
+
     @Update
     suspend fun addArticleToCollection(article: Articulo)
 
@@ -44,12 +48,12 @@ interface ArticlesDao {
     @Delete
     suspend fun deleteCollection(collection: Coleccion)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertArt(article:Articulo)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCol(collection:Coleccion)
+    suspend fun insertCol(collection: Coleccion)
 
+    @Update
+    suspend fun updateCollection(col: Coleccion)
 
 
 }

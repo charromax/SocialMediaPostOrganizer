@@ -1,4 +1,4 @@
-package com.example.posteosdeig.ui.colecciones
+package com.example.posteosdeig.ui.addarticulo
 
 import android.os.Bundle
 import android.view.View
@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import com.example.posteosdeig.R
 import com.example.posteosdeig.data.model.Articulo
 import com.example.posteosdeig.databinding.FragmentAddArticleBinding
+import com.example.posteosdeig.ui.colecciones.ColeccionesViewModel
 import com.example.posteosdeig.util.Categories
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint

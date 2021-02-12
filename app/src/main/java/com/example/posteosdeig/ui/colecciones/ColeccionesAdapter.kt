@@ -9,12 +9,25 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.posteosdeig.data.model.ColeccionWithArticulos
 import com.example.posteosdeig.databinding.CollectionItemBinding
+import com.example.posteosdeig.ui.addarticulo.ArticulosAdapter
 
-class ColeccionesAdapter(private val context: Context) :
+class ColeccionesAdapter(private val context: Context, private val listener: OnClickListener) :
     ListAdapter<ColeccionWithArticulos, ColeccionesAdapter.ColeccionesViewHolder>(DiffCallback()) {
 
     inner class ColeccionesViewHolder(private val binding: CollectionItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.apply {
+                root.setOnClickListener {
+                    val position = adapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
+                        listener.onCollectionSelected(getItem(position))
+
+                    }
+                }
+            }
+        }
 
         fun bind(col: ColeccionWithArticulos) {
             binding.apply {
@@ -34,13 +47,18 @@ class ColeccionesAdapter(private val context: Context) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ColeccionesViewHolder {
-        val binding = CollectionItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            CollectionItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ColeccionesViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ColeccionesViewHolder, position: Int) {
         val currentCollection = getItem(position)
         holder.bind(currentCollection)
+    }
+
+    interface OnClickListener {
+        fun onCollectionSelected(coleccionWithArticulos: ColeccionWithArticulos)
     }
 
     class DiffCallback : DiffUtil.ItemCallback<ColeccionWithArticulos>() {

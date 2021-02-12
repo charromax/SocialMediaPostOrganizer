@@ -33,6 +33,7 @@ data class Coleccion (
     get() = DateFormat.getDateTimeInstance().format(createdAt)
 }
 
+@Parcelize
 data class ColeccionWithArticulos(
     @Embedded val coleccion: Coleccion,
     @Relation(
@@ -40,4 +41,4 @@ data class ColeccionWithArticulos(
         entityColumn = "collectionId"
     )
     val article: List<Articulo>
-)
+) : Parcelable

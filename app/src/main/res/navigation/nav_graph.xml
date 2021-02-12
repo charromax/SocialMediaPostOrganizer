@@ -20,13 +20,19 @@
 
     <dialog
         android:id="@+id/add_article_dialog"
-        android:name="com.example.posteosdeig.ui.colecciones.AddArticleDialogFragment"
+        android:name="com.example.posteosdeig.ui.addarticulo.AddArticleDialogFragment"
         tools:layout="@layout/fragment_add_article" />
 
     <fragment
         android:id="@+id/add_collection"
-        android:name="com.example.posteosdeig.ui.colecciones.AddCollectionDialogFragment"
+        android:name="com.example.posteosdeig.ui.addeditcoleccion.AddCollectionFragment"
         tools:layout="@layout/fragment_add_collection"
-        android:label="AddColeccionesFragment" />
+        android:label="AddColeccionesFragment">
+        <argument
+            android:name="coleccion"
+            app:argType="com.example.posteosdeig.data.model.ColeccionWithArticulos"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
 
 </navigation>
