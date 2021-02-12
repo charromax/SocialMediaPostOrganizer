@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp">
+        android:padding="16dp">
 
         <EditText
             android:id="@+id/collection_name_text"
@@ -26,7 +26,6 @@
             android:textSize="24sp"
             app:layout_constraintBottom_toTopOf="@+id/creation_date_text"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
@@ -37,29 +36,39 @@
             style="@style/TextAppearance.MaterialComponents.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:textColor="@color/off_white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/label1"
+            app:layout_constraintStart_toStartOf="@+id/collection_name_text"
+            app:layout_constraintTop_toBottomOf="@+id/collection_name_text"
+            tools:text="Coleccion creada el 15/02/2021" />
+
+        <TextView
+            android:id="@+id/label1"
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Articulos seleccionados:"
             android:textColor="@color/off_white"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/selected_articles_list"
-            app:layout_constraintStart_toStartOf="@+id/collection_name_text"
-            app:layout_constraintTop_toBottomOf="@+id/collection_name_text"
-            tools:text="Coleccion creada el 15/02/2021" />
+            app:layout_constraintStart_toStartOf="@+id/selected_articles_list"
+            app:layout_constraintTop_toBottomOf="@+id/creation_date_text" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/selected_articles_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:background="@drawable/dialog_background"
             android:backgroundTint="@color/off_white"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/categories_spin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/creation_date_text"
+            app:layout_constraintTop_toBottomOf="@+id/label1"
             tools:listitem="@layout/item_layout" />
 
         <androidx.appcompat.widget.AppCompatSpinner
@@ -67,29 +76,39 @@
             style="@style/spinnerStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/dialog_background"
             android:backgroundTint="@color/off_white"
             android:padding="8dp"
             android:spinnerMode="dropdown"
-            app:layout_constraintBottom_toTopOf="@+id/available_articles_list"
-            app:layout_constraintStart_toStartOf="@+id/collection_name_text"
+            app:layout_constraintBottom_toTopOf="@+id/label2"
+            app:layout_constraintStart_toStartOf="@+id/selected_articles_list"
             app:layout_constraintTop_toBottomOf="@+id/selected_articles_list" />
+
+        <TextView
+            android:id="@+id/label2"
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Articulos disponibles:"
+            android:textColor="@color/off_white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/available_articles_list"
+            app:layout_constraintStart_toStartOf="@+id/categories_spin"
+            app:layout_constraintTop_toBottomOf="@+id/categories_spin" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/available_articles_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            android:layout_marginTop="8dp"
             android:background="@drawable/dialog_background"
             android:backgroundTint="@color/off_white"
             app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/categories_spin"
+            app:layout_constraintStart_toStartOf="@+id/label2"
+            app:layout_constraintTop_toBottomOf="@+id/label2"
             tools:listitem="@layout/item_layout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

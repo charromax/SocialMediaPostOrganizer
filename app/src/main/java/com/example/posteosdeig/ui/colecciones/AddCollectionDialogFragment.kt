@@ -79,6 +79,7 @@ class AddCollectionDialogFragment : Fragment(R.layout.fragment_add_collection),
                     viewModel.addArticleToCollection(updateArticulo)
                 }
                 collectionNameText.setText("")
+                selectedArticulosAdapter.clearList()
                 Snackbar.make(
                     view,
                     "Coleccion ${coleccion.name} guardada con exito!",

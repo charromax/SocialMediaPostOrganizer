@@ -65,6 +65,12 @@ class AvailableArticulosAdapter(
         submitList(newList)
     }
 
+    fun clearList() {
+        val newList = ArrayList<Articulo>(currentList)
+        newList.clear()
+        submitList(newList)
+    }
+
     fun addArticle(articulo: Articulo) {
         val newList = ArrayList<Articulo>(currentList)
         newList.add(articulo)
