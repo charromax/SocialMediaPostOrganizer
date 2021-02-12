@@ -55,8 +55,7 @@ class AddCollectionDialogFragment: DialogFragment(R.layout.fragment_add_collecti
             creationDateText.text = "Coleccion creada el ${DateFormat.getDateTimeInstance().format(System.currentTimeMillis())}"
             saveCollection.setOnClickListener{
                 val coleccion = Coleccion(
-                    name = binding.collectionNameText.text.toString().trim(),
-                    category = binding.categoriesSpin.selectedItem.toString()
+                    name = binding.collectionNameText.text.toString().trim()
                 )
 
                 viewModel.saveNewCollection(coleccion)

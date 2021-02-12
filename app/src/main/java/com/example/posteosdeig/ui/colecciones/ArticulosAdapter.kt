@@ -1,21 +1,32 @@
 package com.example.posteosdeig.ui.colecciones
 
+import android.content.Context
+import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.posteosdeig.data.model.Articulo
-import com.example.posteosdeig.data.model.ColeccionWithArticulos
 import com.example.posteosdeig.databinding.ItemLayoutBinding
+import com.example.posteosdeig.util.Categories
 
-class ArticulosAdapter(): ListAdapter<Articulo, ArticulosAdapter.ArticulosViewHolder>(ArticleCallback()) {
+class ArticulosAdapter(private val context: Context) :
+    ListAdapter<Articulo, ArticulosAdapter.ArticulosViewHolder>(ArticleCallback()) {
 
-    class ArticulosViewHolder(private val binding: ItemLayoutBinding): RecyclerView.ViewHolder(binding.root){
+    inner class ArticulosViewHolder(private val binding: ItemLayoutBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(articulo: Articulo) {
             binding.apply {
                 text1.text = articulo.title
+                text1.background.setColorFilter(
+                    ContextCompat.getColor(
+                        context,
+                        Categories.valueOf(articulo.category).color
+                    ), PorterDuff.Mode.SRC_ATOP
+                )
             }
         }
 

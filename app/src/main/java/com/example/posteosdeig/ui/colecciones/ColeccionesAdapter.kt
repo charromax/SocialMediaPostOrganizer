@@ -1,31 +1,30 @@
 package com.example.posteosdeig.ui.colecciones
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.SimpleAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.example.posteosdeig.data.model.Coleccion
 import com.example.posteosdeig.data.model.ColeccionWithArticulos
 import com.example.posteosdeig.databinding.CollectionItemBinding
-import com.example.posteosdeig.databinding.ItemLayoutBinding
 
-class ColeccionesAdapter: ListAdapter<ColeccionWithArticulos, ColeccionesAdapter.ColeccionesViewHolder>(DiffCallback()) {
+class ColeccionesAdapter(private val context: Context) :
+    ListAdapter<ColeccionWithArticulos, ColeccionesAdapter.ColeccionesViewHolder>(DiffCallback()) {
 
-    class ColeccionesViewHolder(private val binding: CollectionItemBinding): RecyclerView.ViewHolder(binding.root){
+    inner class ColeccionesViewHolder(private val binding: CollectionItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(col: ColeccionWithArticulos){
+        fun bind(col: ColeccionWithArticulos) {
             binding.apply {
-                with(col){
+                with(col) {
                     titleText.text = coleccion.name
                     creationDate?.text = coleccion.formattedDate
-                    categoryText.text= coleccion.category.toUpperCase()
                 }
 
             }
-            val articleAdapter = ArticulosAdapter()
+            val articleAdapter = ArticulosAdapter(context)
             with(binding.articlesList){
                 adapter = articleAdapter
                 layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)

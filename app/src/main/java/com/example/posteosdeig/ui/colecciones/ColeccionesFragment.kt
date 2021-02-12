@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -34,7 +35,7 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentCollectionsBinding.bind(view)
-        val coleccionesAdapter = ColeccionesAdapter()
+        val coleccionesAdapter = ColeccionesAdapter(requireContext())
 
         binding.apply {
             collectionsList.apply {
@@ -112,6 +113,18 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections) {
                 )
                     .addSwipeLeftActionIcon(R.drawable.ic_release)
                     .addSwipeRightActionIcon(R.drawable.ic_delete_forever_24)
+                    .addSwipeLeftBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.sport_color
+                        )
+                    )
+                    .addSwipeRightBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.delete_color
+                        )
+                    )
                     .create()
                     .decorate()
                 super.onChildDraw(

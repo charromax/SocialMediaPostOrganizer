@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/purple_200">
+    android:background="@drawable/app_background">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/collections_list"
@@ -16,7 +16,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:backgroundTint="@color/purple_500"
         android:layout_margin="16dp"
         android:src="@drawable/ic_article" />
 

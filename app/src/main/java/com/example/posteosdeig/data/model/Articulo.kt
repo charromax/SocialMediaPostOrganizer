@@ -26,7 +26,6 @@ data class Articulo(
 data class Coleccion (
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
     val name: String,
-    val category: String,
     val createdAt: Long = System.currentTimeMillis()
         ) : Parcelable {
 
