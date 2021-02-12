@@ -30,7 +30,12 @@
         android:label="AddColeccionesFragment">
         <argument
             android:name="coleccion"
-            app:argType="com.example.posteosdeig.data.model.ColeccionWithArticulos"
+            app:argType="com.example.posteosdeig.data.model.Coleccion"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="articulos"
+            app:argType="com.example.posteosdeig.data.model.Articulo[]"
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>

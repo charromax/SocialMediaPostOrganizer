@@ -11,7 +11,6 @@ import com.example.posteosdeig.data.ArticlesDao
 import com.example.posteosdeig.data.PreferencesManager
 import com.example.posteosdeig.data.model.Articulo
 import com.example.posteosdeig.data.model.Coleccion
-import com.example.posteosdeig.data.model.ColeccionWithArticulos
 import com.example.posteosdeig.util.Categories
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
@@ -35,24 +34,31 @@ class AddEditCollectionViewModel @ViewModelInject constructor(
     private var availableArticlesFlow: Flow<List<Articulo>> =
         prefs.flatMapLatest { getAllAvailableArticles(it.category) }
     val availableArticles = availableArticlesFlow.asLiveData()
-    var coleccion = state.get<ColeccionWithArticulos>("coleccion")
-    var colName = state.get<ColeccionWithArticulos>("coleccion")?.coleccion?.name
-        ?: coleccion?.coleccion?.name ?: ""
+    var coleccion = state.get<Coleccion>("coleccion")
+    var articles = state.get<Array<Articulo>>("articulos")
+    var colName = state.get<String>("name")
+        ?: coleccion?.name ?: ""
         set(value) {
             field = value
-            state.set("coleccion", value)
+            state.set("name", value)
         }
 
-    var dateCreated = state.get<ColeccionWithArticulos>("coleccion")?.coleccion?.formattedDate
-        ?: coleccion?.coleccion?.formattedDate ?: "Coleccion creada el ${
+    var dateCreated = state.get<String>("createdAt")
+        ?: coleccion?.formattedDate ?: "Coleccion creada el ${
             DateFormat.getDateTimeInstance().format(System.currentTimeMillis())
         }"
 
-    var articlesInCollection =
-        state.get<ColeccionWithArticulos>("coleccion")?.article ?: coleccion?.article ?: emptyList()
+    var branch = state.get<String>("branch") ?: coleccion?.branch ?: ""
         set(value) {
             field = value
-            state.set("article", value)
+            state.set("branch", value)
+        }
+
+    var articlesInCollection =
+        state.get<Array<Articulo>>("articulos") ?: articles ?: emptyArray<Articulo>()
+        set(value) {
+            field = value
+            state.set("articulos", value)
         }
 
     fun getAllAvailableArticles(category: Categories): Flow<List<Articulo>> {
@@ -98,10 +104,10 @@ class AddEditCollectionViewModel @ViewModelInject constructor(
             return
         }
         if (coleccion != null) {
-            coleccion?.coleccion?.copy(name = colName)?.let { updateCollection(it) }
-            articlesList.map { addArticleToCollection(it.copy(collectionId = coleccion?.coleccion?.id!!)) }
+            coleccion?.copy(name = colName)?.let { updateCollection(it) }
+            articlesList.map { addArticleToCollection(it.copy(collectionId = coleccion?.id!!)) }
         } else {
-            val newCol = Coleccion(name = colName)
+            val newCol = Coleccion(name = colName, branch = branch)
             saveNewCollection(newCol)
             articlesList.map { addArticleToCollection(it.copy(collectionId = newCol.id)) }
         }

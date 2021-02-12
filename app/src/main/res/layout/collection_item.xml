@@ -35,6 +35,18 @@
             app:layout_constraintTop_toBottomOf="@+id/title_text"
             tools:text="semana del 10 al 17" />
 
+        <TextView
+            android:id="@+id/branch_label"
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="true"
+            android:textColor="@color/purple_200"
+            app:layout_constraintBottom_toBottomOf="@+id/title_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="EIFFEL" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/articles_list"
             android:layout_width="match_parent"

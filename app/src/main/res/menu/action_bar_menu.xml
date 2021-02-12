@@ -3,10 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/send_email"
+        android:icon="@drawable/ic_email_24"
+        android:title="Enviar correo"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/read_file"
         android:icon="@drawable/ic_baseline_attach_file_24"
         android:title="Importar Articulos"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/sort_order"
@@ -26,6 +32,6 @@
     <item
         android:id="@+id/add_collection"
         android:icon="@drawable/ic_baseline_create_new_folder_24"
-        android:title="Coleccion +"
+        android:title="Nueva Coleccion"
         app:showAsAction="ifRoom"/>
 </menu>

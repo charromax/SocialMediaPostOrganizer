@@ -21,12 +21,16 @@ import com.example.posteosdeig.R
 import com.example.posteosdeig.data.SortOrder
 import com.example.posteosdeig.data.model.ColeccionWithArticulos
 import com.example.posteosdeig.databinding.FragmentCollectionsBinding
+import com.example.posteosdeig.util.JavaMailAPI
 import com.example.posteosdeig.util.exhaustive
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.flow.collect
+import java.util.*
 
+const val sMAIL = "manuelrg88@gmail.com"
+const val sPWD = "Mg412115"
 
 @AndroidEntryPoint
 class ColeccionesFragment : Fragment(R.layout.fragment_collections),
@@ -35,6 +39,7 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
     private val viewModel: ColeccionesViewModel by viewModels()
     private var removedPosition = 0
     private var removedCol: ColeccionWithArticulos? = null
+    private val colsForEmail = arrayListOf<ColeccionWithArticulos>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,6 +59,7 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
 
         val touchHelperCallback = object :
             ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -161,7 +167,7 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
                     is ColeccionesViewModel.ColeccionesEvents.NavigateToEditCollectionFragment -> {
                         val action =
                             ColeccionesFragmentDirections.actionColeccionesFragmentToAddCollection(
-                                event.col
+                                event.col.coleccion, event.col.article.toTypedArray()
                             )
                         findNavController().navigate(action)
                     }
@@ -173,9 +179,7 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.action_bar_menu, menu)
-        val newCollection = menu.findItem(R.id.add_article)
-        val sortByDate = menu.findItem(R.id.action_sort_by_date)
-        val sortByName = menu.findItem(R.id.action_sort_by_name)
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -196,9 +200,26 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
                 viewModel.onSortOrderSelected(SortOrder.BY_NAME)
                 true
             }
+            R.id.send_email -> {
+                if (colsForEmail.isNotEmpty()) {
+                    sendEmail(colsForEmail)
+                }
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
 
+    }
+
+    private fun sendEmail(colsForEmail: ArrayList<ColeccionWithArticulos>) {
+        var message = ""
+        colsForEmail.forEach {
+            message += (it.toString() + "\n")
+        }
+        val api = JavaMailAPI(
+            requireContext(), "hola tuti", message, "manuelrg88@gmail.com"
+        )
+        Snackbar.make(requireView(), "email enviado!", Snackbar.LENGTH_SHORT).show()
     }
 
     private fun openFile() {
@@ -232,5 +253,10 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
 
     override fun onCollectionSelected(coleccionWithArticulos: ColeccionWithArticulos) {
         viewModel.onCollectionSelected(coleccionWithArticulos)
+    }
+
+    override fun onCollectionMarked(col: ColeccionWithArticulos): Boolean {
+        colsForEmail.add(col)
+        return true
     }
 }

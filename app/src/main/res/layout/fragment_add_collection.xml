@@ -74,7 +74,7 @@
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/categories_spin"
             style="@style/spinnerStyle"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/dialog_background"
@@ -83,6 +83,20 @@
             android:spinnerMode="dropdown"
             app:layout_constraintBottom_toTopOf="@+id/label2"
             app:layout_constraintStart_toStartOf="@+id/selected_articles_list"
+            app:layout_constraintTop_toBottomOf="@+id/selected_articles_list" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/branches_spin"
+            style="@style/spinnerStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/dialog_background"
+            android:backgroundTint="@color/off_white"
+            android:padding="8dp"
+            android:spinnerMode="dropdown"
+            app:layout_constraintBottom_toBottomOf="@+id/categories_spin"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/selected_articles_list" />
 
         <TextView
@@ -111,7 +125,18 @@
             app:layout_constraintTop_toBottomOf="@+id/label2"
             tools:listitem="@layout/item_layout" />
 
+        <!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+        <!--            android:id="@+id/send_email"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_gravity="bottom|end"-->
+        <!--            android:contentDescription="enviar por correo"-->
+        <!--            android:src="@drawable/ic_email_24"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent" />-->
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/save_collection"

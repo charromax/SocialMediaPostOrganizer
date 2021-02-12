@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.posteosdeig.R
 import com.example.posteosdeig.data.model.Articulo
+import com.example.posteosdeig.data.model.Branches
 import com.example.posteosdeig.databinding.FragmentAddCollectionBinding
 import com.example.posteosdeig.util.Categories
 import com.example.posteosdeig.util.exhaustive
@@ -53,6 +55,12 @@ class AddCollectionFragment : Fragment(R.layout.fragment_add_collection),
                     android.R.layout.simple_spinner_dropdown_item,
                     Categories.values()
                 )
+            branchesSpin.adapter =
+                ArrayAdapter<Branches>(
+                    requireContext(),
+                    android.R.layout.simple_spinner_dropdown_item,
+                    Branches.values()
+                )
             viewModel.availableArticles.observe(viewLifecycleOwner, Observer {
                 availableArticulosAdapter.submitList(it)
             })
@@ -60,8 +68,8 @@ class AddCollectionFragment : Fragment(R.layout.fragment_add_collection),
                 collectionNameText.setText(viewModel.colName)
                 creationDateText.text = viewModel.dateCreated
             }
-            selectedArticulosAdapter.updateList(viewModel.articlesInCollection)
-            viewModel.onReleaseArticles(viewModel.articlesInCollection)
+            selectedArticulosAdapter.updateList(viewModel.articlesInCollection.toList())
+            viewModel.onReleaseArticles(viewModel.articlesInCollection.toList())
             articlesList.addAll(viewModel.articlesInCollection)
 
             categoriesSpin.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -81,8 +89,31 @@ class AddCollectionFragment : Fragment(R.layout.fragment_add_collection),
                 }
 
             }
+
+            branchesSpin.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    p3: Long
+                ) {
+                    if (parent != null) {
+
+                        viewModel.branch = parent.getItemAtPosition(position).toString()
+                        availableArticulosAdapter.notifyDataSetChanged()
+                    }
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    viewModel.branch = Branches.EIFFEL.name
+                }
+
+            }
+
+            collectionNameText.addTextChangedListener {
+                viewModel.colName = it.toString()
+            }
             saveCollection.setOnClickListener {
-                collectionNameText.setText("")
                 selectedArticulosAdapter.clearList()
                 viewModel.onSaveClick(articlesList)
             }
@@ -103,6 +134,7 @@ class AddCollectionFragment : Fragment(R.layout.fragment_add_collection),
                             "${event.coleccion.name} guardada exitosamente!",
                             Snackbar.LENGTH_LONG
                         ).show()
+                        binding.collectionNameText.setText("")
                     }
                     AddEditCollectionViewModel.AddColeccionesEvents.ShowNoTitleMessage -> {
                         Snackbar.make(
