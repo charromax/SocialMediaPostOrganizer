@@ -9,22 +9,24 @@
         android:id="@+id/coleccionesFragment"
         android:name="com.example.posteosdeig.ui.colecciones.ColeccionesFragment"
         tools:layout="@layout/fragment_collections"
-        android:label="ColeccionesFragment" >
-        <action
-            android:id="@+id/action_coleccionesFragment_to_add_collection_dialog"
-            app:destination="@id/add_collection_dialog" />
+        android:label="ColeccionesFragment">
         <action
             android:id="@+id/action_coleccionesFragment_to_add_article_dialog"
             app:destination="@id/add_article_dialog" />
+        <action
+            android:id="@+id/action_coleccionesFragment_to_add_collection"
+            app:destination="@id/add_collection" />
     </fragment>
+
     <dialog
         android:id="@+id/add_article_dialog"
         android:name="com.example.posteosdeig.ui.colecciones.AddArticleDialogFragment"
         tools:layout="@layout/fragment_add_article" />
 
-    <dialog
-        android:id="@+id/add_collection_dialog"
+    <fragment
+        android:id="@+id/add_collection"
         android:name="com.example.posteosdeig.ui.colecciones.AddCollectionDialogFragment"
-        tools:layout="@layout/fragment_add_collection"/>
+        tools:layout="@layout/fragment_add_collection"
+        android:label="AddColeccionesFragment" />
 
 </navigation>

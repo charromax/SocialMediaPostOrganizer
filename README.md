@@ -5,7 +5,6 @@ Base de datos para organizar posteos de instagram, tomando como base una lista d
 Utiliza: Room, Datastore, MVVM, Flow, Dagger Hilt
 
 #TODO:
-* Mostrar articulos en coleccion y deshacer agregar
 * editar colecciones creadas
 * emails automaticos con colecciones
 

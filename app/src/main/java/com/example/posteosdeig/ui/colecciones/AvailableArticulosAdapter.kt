@@ -17,7 +17,10 @@ class AvailableArticulosAdapter(
     private val context: Context
 ) : ListAdapter<Articulo, AvailableArticulosAdapter.AvailableArticulosViewHolder>(ArticleCallback()) {
 
-    inner class AvailableArticulosViewHolder(private val binding: ItemLayoutBinding) :
+    inner class AvailableArticulosViewHolder(
+        private val binding: ItemLayoutBinding,
+        parent: ViewGroup
+    ) :
         RecyclerView.ViewHolder(binding.root) {
 
         init {
@@ -25,7 +28,7 @@ class AvailableArticulosAdapter(
                 root.setOnClickListener {
                     val position = adapterPosition
                     if (position != RecyclerView.NO_POSITION) {
-                        listener.onArticleSelected(getItem(position), position)
+                        listener.onArticleSelected(getItem(position), position, parent.id)
 
                     }
                 }
@@ -48,7 +51,7 @@ class AvailableArticulosAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AvailableArticulosViewHolder {
         val binding = ItemLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return AvailableArticulosViewHolder(binding)
+        return AvailableArticulosViewHolder(binding, parent)
     }
 
     override fun onBindViewHolder(holder: AvailableArticulosViewHolder, position: Int) {
@@ -62,8 +65,14 @@ class AvailableArticulosAdapter(
         submitList(newList)
     }
 
+    fun addArticle(articulo: Articulo) {
+        val newList = ArrayList<Articulo>(currentList)
+        newList.add(articulo)
+        submitList(newList)
+    }
+
     interface OnClickListener {
-        fun onArticleSelected(articulo: Articulo, position: Int)
+        fun onArticleSelected(articulo: Articulo, position: Int, parentId: Int)
     }
 
     class ArticleCallback : DiffUtil.ItemCallback<Articulo>() {

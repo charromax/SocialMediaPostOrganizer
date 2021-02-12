@@ -157,7 +157,7 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.add_collection -> {
-                findNavController().navigate(R.id.add_collection_dialog)
+                findNavController().navigate(R.id.add_collection)
                 true
             }
             R.id.read_file -> {

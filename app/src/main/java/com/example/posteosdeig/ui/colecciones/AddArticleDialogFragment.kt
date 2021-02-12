@@ -20,7 +20,11 @@ class AddArticleDialogFragment : DialogFragment(R.layout.fragment_add_article) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentAddArticleBinding.bind(view)
         binding.categoriesSpin.adapter =
-            ArrayAdapter<Categories>(requireContext(), R.layout.item_layout, Categories.values())
+            ArrayAdapter<Categories>(
+                requireContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                Categories.values()
+            )
         binding.saveArticle.setOnClickListener(View.OnClickListener {
             //TODO: Save new article to DB
             viewModel.addNewArticle(
