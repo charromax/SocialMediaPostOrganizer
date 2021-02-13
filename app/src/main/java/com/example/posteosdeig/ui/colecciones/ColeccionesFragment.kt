@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Canvas
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -13,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +29,6 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.flow.collect
-import java.util.*
 
 const val sMAIL = "manuelrg88@gmail.com"
 const val sPWD = "Mg412115"
@@ -54,7 +55,9 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
             }
 
         }
-        viewModel.colecciones.observe(viewLifecycleOwner) { coleccionesAdapter.submitList(it) }
+        viewModel.colecciones.observe(viewLifecycleOwner) {
+            coleccionesAdapter.submitList(it)
+        }
         setHasOptionsMenu(true)
 
         val touchHelperCallback = object :
@@ -145,7 +148,7 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
                             binding.root,
                             "${event.col.coleccion.name} borrada!",
                             Snackbar.LENGTH_LONG
-                        ).setAction("Deshacer") {
+                        ).setAction(getString(R.string.undo)) {
                             viewModel.onUndoDelete(event.col)
                         }.show()
                     }
@@ -155,7 +158,7 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
                             binding.root,
                             "${event.col.coleccion.name} Articulos liberados!",
                             Snackbar.LENGTH_LONG
-                        ).setAction("Deshacer") {
+                        ).setAction(getString(R.string.undo)) {
                             viewModel.addArticlesBackInCollection(event.col)
                         }.show()
                     }
@@ -171,8 +174,18 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
                             )
                         findNavController().navigate(action)
                     }
+                    ColeccionesViewModel.ColeccionesEvents.CollectionAdded -> {
+                        Snackbar.make(
+                            binding.root,
+                            "Coleccion agregada a la lista",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
                 }.exhaustive
             }
+        }
+        viewModel.htmlFile.observe(viewLifecycleOwner) {
+            sendEmail(it, coleccionesAdapter)
         }
     }
 
@@ -202,7 +215,7 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
             }
             R.id.send_email -> {
                 if (colsForEmail.isNotEmpty()) {
-                    sendEmail(colsForEmail)
+                    viewModel.loadEmail()
                 }
                 true
             }
@@ -211,15 +224,30 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
 
     }
 
-    private fun sendEmail(colsForEmail: ArrayList<ColeccionWithArticulos>) {
-        var message = ""
-        colsForEmail.forEach {
-            message += (it.toString() + "\n")
+    private fun sendEmail(emailFile: String, adapter: ColeccionesAdapter) {
+        if (emailFile.isNotBlank()) {
+            var message = ""
+            colsForEmail.forEach {
+                message += (it.toString() + "\n")
+            }
+//            emailFile.replace("{Coleccion}", "Coleccion: ${colsForEmail[0].coleccion.name}")
+//            emailFile.replace("{Articulo0}", "Coleccion: ${colsForEmail[0].article[0].toString()}")
+//            emailFile.replace("{Articulo1}", "Coleccion: ${colsForEmail[0].article[1].toString()}")
+//            emailFile.replace("{Articulo2}", "Coleccion: ${colsForEmail[0].article[2].toString()}")
+            val api = JavaMailAPI(
+                requireContext(), "hola tuti", message, "quadriniana@gmail.com"
+            ).execute()
+            Snackbar.make(
+                requireView(),
+                getString(R.string.email_sent_message),
+                Snackbar.LENGTH_SHORT
+            ).show()
+            colsForEmail
+                .map { it.coleccion.isMarked = false }
+            colsForEmail.clear()
+            adapter.notifyDataSetChanged()
+
         }
-        val api = JavaMailAPI(
-            requireContext(), "hola tuti", message, "manuelrg88@gmail.com"
-        )
-        Snackbar.make(requireView(), "email enviado!", Snackbar.LENGTH_SHORT).show()
     }
 
     private fun openFile() {
@@ -236,13 +264,13 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
                 if (viewModel.onFileRead(it)) {
                     Snackbar.make(
                         requireView(),
-                        "Articulos agregados!",
+                        getString(R.string.articles_added_message),
                         Snackbar.LENGTH_LONG
                     ).show()
                 } else {
                     Snackbar.make(
                         requireView(),
-                        "Error agregando articulos :(",
+                        getString(R.string.error_adding_articles_message),
                         Snackbar.LENGTH_LONG
                     ).show()
                 }
@@ -256,7 +284,13 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
     }
 
     override fun onCollectionMarked(col: ColeccionWithArticulos): Boolean {
-        colsForEmail.add(col)
+
+        if (col.coleccion.isMarked) colsForEmail.add(col) else if (col.coleccion.isMarked.not()
+            && colsForEmail.find { it.coleccion.id == col.coleccion.id } != null
+        ) {
+            colsForEmail.remove(col)
+        }
+        Log.i(TAG, "onCollectionMarked: $colsForEmail")
         return true
     }
 }

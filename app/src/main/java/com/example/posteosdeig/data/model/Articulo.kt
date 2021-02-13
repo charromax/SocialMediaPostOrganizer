@@ -33,6 +33,7 @@ data class Coleccion(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
     val name: String,
     val branch: String,
+    var isMarked: Boolean = false,
     val createdAt: Long = System.currentTimeMillis()
 ) : Parcelable {
 

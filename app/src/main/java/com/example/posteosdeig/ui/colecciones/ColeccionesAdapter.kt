@@ -4,12 +4,10 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.example.posteosdeig.R
 import com.example.posteosdeig.data.model.ColeccionWithArticulos
 import com.example.posteosdeig.databinding.CollectionItemBinding
 import com.example.posteosdeig.ui.addarticulo.ArticulosAdapter
@@ -19,7 +17,6 @@ class ColeccionesAdapter(private val context: Context, private val listener: OnC
 
     inner class ColeccionesViewHolder(private val binding: CollectionItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        private var isMarked = false
         init {
             binding.apply {
                 root.setOnClickListener {
@@ -29,33 +26,33 @@ class ColeccionesAdapter(private val context: Context, private val listener: OnC
 
                     }
                 }
-                root.setOnLongClickListener(View.OnLongClickListener {
-                    isMarked = true
-                    listener.onCollectionMarked(getItem(adapterPosition))
-                    return@OnLongClickListener true
-                })
+
             }
         }
 
         fun bind(col: ColeccionWithArticulos) {
             binding.apply {
+
+                root.setOnLongClickListener(View.OnLongClickListener {
+                    col.coleccion.isMarked = !col.coleccion.isMarked
+                    notifyItemChanged(adapterPosition)
+                    listener.onCollectionMarked(col)
+                })
                 with(col) {
                     titleText.text = coleccion.name
                     creationDate?.text = coleccion.formattedDate
                     branchLabel.text = coleccion.branch
-                    if (isMarked) {
-                        root.setCardBackgroundColor(
-                            ContextCompat.getColor(
-                                context,
-                                R.color.design_default_color_primary
-                            )
-                        )
+                    if (coleccion.isMarked) {
+                        isMarkedIcon.visibility = View.VISIBLE
+                    } else {
+                        isMarkedIcon.visibility = View.GONE
                     }
                 }
 
             }
+
             val articleAdapter = ArticulosAdapter(context)
-            with(binding.articlesList){
+            with(binding.articlesList) {
                 adapter = articleAdapter
                 layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             }

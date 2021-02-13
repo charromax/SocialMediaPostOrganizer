@@ -15,6 +15,18 @@
         android:layout_height="match_parent"
         android:padding="16dp">
 
+        <ImageView
+            android:id="@+id/is_marked_icon"
+            android:layout_width="wrap_content"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            app:tint="@color/delete_color"
+            tools:visibility="visible"
+            android:src="@drawable/ic_email_24"
+            app:layout_constraintBottom_toBottomOf="@+id/title_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/title_text"
             style="@style/TextAppearance.MaterialComponents.Headline5"
@@ -40,10 +52,13 @@
             style="@style/TextAppearance.MaterialComponents.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            app:layout_goneMarginEnd="0dp"
+            android:layout_marginRight="24dp"
             android:textAllCaps="true"
             android:textColor="@color/purple_200"
             app:layout_constraintBottom_toBottomOf="@+id/title_text"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/is_marked_icon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="EIFFEL" />
 

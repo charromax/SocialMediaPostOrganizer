@@ -9,9 +9,9 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/read_file"
-        android:icon="@drawable/ic_baseline_attach_file_24"
-        android:title="Importar Articulos"
+        android:id="@+id/add_collection"
+        android:icon="@drawable/ic_baseline_create_new_folder_24"
+        android:title="Nueva Coleccion"
         app:showAsAction="ifRoom" />
 
     <item
@@ -22,16 +22,17 @@
         <menu>
             <item
                 android:id="@+id/action_sort_by_name"
-                android:title="Ordenar por Nombre"/>
+                android:title="Ordenar por Nombre" />
             <item
                 android:id="@+id/action_sort_by_date"
-                android:title="Ordenar por Fecha"/>
+                android:title="Ordenar por Fecha" />
         </menu>
     </item>
 
     <item
-        android:id="@+id/add_collection"
-        android:icon="@drawable/ic_baseline_create_new_folder_24"
-        android:title="Nueva Coleccion"
-        app:showAsAction="ifRoom"/>
+        android:id="@+id/read_file"
+        android:icon="@drawable/ic_baseline_attach_file_24"
+        android:title="Importar Articulos"
+        app:showAsAction="ifRoom" />
+
 </menu>

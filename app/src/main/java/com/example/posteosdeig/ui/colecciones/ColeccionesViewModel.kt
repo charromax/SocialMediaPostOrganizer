@@ -15,24 +15,30 @@ import com.example.posteosdeig.data.model.Coleccion
 import com.example.posteosdeig.data.model.ColeccionWithArticulos
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.io.BufferedReader
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStreamReader
 
+
 const val TAG = "VIEWMODEL"
+
 class ColeccionesViewModel @ViewModelInject constructor(
     private val articlesDao: ArticlesDao,
     private val preferencesManager: PreferencesManager,
     @ApplicationContext private val applicationContext: Context
 
-    ) : ViewModel() {
+) : ViewModel() {
     private val prefs = preferencesManager.preferencesFlow
     private val coleccionesFlow =
         prefs.flatMapLatest { articlesDao.getSortedCollectionsWithArticles(it.order) }
     val colecciones = coleccionesFlow.asLiveData()
+    private val _htmlFile = MutableStateFlow<String>("")
+    val htmlFile = _htmlFile.asLiveData()
 
     private val coleccionesEventChannel = Channel<ColeccionesEvents>()
     val colEvents = coleccionesEventChannel.receiveAsFlow()
@@ -59,7 +65,7 @@ class ColeccionesViewModel @ViewModelInject constructor(
             )
         }
 
-    fun addArticlesBackInCollection(col:ColeccionWithArticulos) = viewModelScope.launch {
+    fun addArticlesBackInCollection(col: ColeccionWithArticulos) = viewModelScope.launch {
         col.article.map {
             articlesDao.addArticleToCollection(it.copy(collectionId = col.coleccion.id))
         }
@@ -84,7 +90,7 @@ class ColeccionesViewModel @ViewModelInject constructor(
         }
     }
 
-    fun onFileRead(uri: Uri): Boolean{
+    fun onFileRead(uri: Uri): Boolean {
         val articlesList = getListData(uri)
         articlesList?.map {
             val parts = it.split(',')
@@ -95,6 +101,26 @@ class ColeccionesViewModel @ViewModelInject constructor(
         return true
     }
 
+    fun loadEmail() = viewModelScope.launch {
+        // "string" is a your html file path
+        try {
+            val fileInputStream = applicationContext.assets.open("email.html")
+            val r = BufferedReader(InputStreamReader(fileInputStream))
+            val strBuilder = StringBuilder()
+            var line: String?
+            while (r.readLine().also { line = it } != null) {
+                strBuilder.append(line).append("\n")
+            }
+
+            _htmlFile.value = strBuilder.toString()
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+
     fun onUndoDelete(col: ColeccionWithArticulos) {
         saveNewCollection(col.coleccion)
         addArticlesBackInCollection(col)
@@ -102,6 +128,10 @@ class ColeccionesViewModel @ViewModelInject constructor(
 
     fun onAddNewCollectionClick() = viewModelScope.launch {
         coleccionesEventChannel.send(ColeccionesEvents.NavigateToAddCollectionFragment)
+    }
+
+    fun onCollectionMarked() = viewModelScope.launch {
+        coleccionesEventChannel.send(ColeccionesEvents.CollectionAdded)
     }
 
     fun onCollectionSelected(col: ColeccionWithArticulos) = viewModelScope.launch {
@@ -116,6 +146,7 @@ class ColeccionesViewModel @ViewModelInject constructor(
             ColeccionesEvents()
 
         object NavigateToAddCollectionFragment : ColeccionesEvents()
+        object CollectionAdded : ColeccionesEvents()
         data class NavigateToEditCollectionFragment(val col: ColeccionWithArticulos) :
             ColeccionesEvents()
     }

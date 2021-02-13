@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">PosteosDeIG</string>
+    <string name="articles_added_message">Articulos agregados!</string>
+    <string name="error_adding_articles_message">Error agregando articulos :(</string>
+    <string name="email_sent_message">email enviado!</string>
+    <string name="undo">Deshacer</string>
 </resources>
