@@ -55,6 +55,6 @@ data class ColeccionWithArticulos(
         for (articulo in article) {
             lista += (articulo.toString() + "\n")
         }
-        return "Coleccion: ${coleccion.name} \n ARTICULOS: \n $lista"
+        return "Coleccion: ${coleccion.name} \nARTICULOS: \n $lista"
     }
 }
