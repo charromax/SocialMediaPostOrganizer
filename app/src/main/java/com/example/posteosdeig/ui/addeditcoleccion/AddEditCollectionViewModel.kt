@@ -43,9 +43,15 @@ class AddEditCollectionViewModel @ViewModelInject constructor(
             state.set("name", value)
         }
 
+    var postDate = state.get<Long>("postDate") ?: coleccion?.postDate ?: ""
+        set(value) {
+            field = value
+            state.set("postDate", value)
+        }
+
     var dateCreated = state.get<String>("createdAt")
         ?: coleccion?.formattedDate ?: "Coleccion creada el ${
-            DateFormat.getDateTimeInstance().format(System.currentTimeMillis())
+        DateFormat.getDateTimeInstance().format(System.currentTimeMillis())
         }"
 
     var branch = state.get<String>("branch") ?: coleccion?.branch ?: ""
@@ -98,16 +104,21 @@ class AddEditCollectionViewModel @ViewModelInject constructor(
         addColsEventChannel.send(AddColeccionesEvents.ArticlesReleasedWarning)
     }
 
+    fun onCancelPicker() = viewModelScope.launch {
+        addColsEventChannel.send(AddColeccionesEvents.OnCancelPicker)
+    }
+
     fun onSaveClick(articlesList: List<Articulo>) {
         if (colName.isBlank()) {
             showNoTitleError()
             return
         }
         if (coleccion != null) {
-            coleccion?.copy(name = colName)?.let { updateCollection(it) }
+            coleccion?.copy(name = colName, postDate = postDate as Long)
+                ?.let { updateCollection(it) }
             articlesList.map { addArticleToCollection(it.copy(collectionId = coleccion?.id!!)) }
         } else {
-            val newCol = Coleccion(name = colName, branch = branch)
+            val newCol = Coleccion(name = colName, branch = branch, postDate = postDate as Long)
             saveNewCollection(newCol)
             articlesList.map { addArticleToCollection(it.copy(collectionId = newCol.id)) }
         }
@@ -119,6 +130,7 @@ class AddEditCollectionViewModel @ViewModelInject constructor(
         object ShowNoTitleMessage : AddColeccionesEvents()
         object ArticlesReleasedWarning : AddColeccionesEvents()
         data class CollectionSavedMessage(val coleccion: Coleccion) : AddColeccionesEvents()
+        object OnCancelPicker : AddColeccionesEvents()
     }
 
 

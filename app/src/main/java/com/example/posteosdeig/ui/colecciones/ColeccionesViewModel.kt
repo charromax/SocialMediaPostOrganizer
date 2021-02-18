@@ -7,7 +7,12 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import com.example.posteosdeig.data.ArticlesDao
+import com.example.posteosdeig.data.EmailWorker
 import com.example.posteosdeig.data.PreferencesManager
 import com.example.posteosdeig.data.SortOrder
 import com.example.posteosdeig.data.model.Articulo
@@ -23,6 +28,7 @@ import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStreamReader
+import java.util.concurrent.TimeUnit
 
 
 const val TAG = "VIEWMODEL"
@@ -42,6 +48,10 @@ class ColeccionesViewModel @ViewModelInject constructor(
 
     private val coleccionesEventChannel = Channel<ColeccionesEvents>()
     val colEvents = coleccionesEventChannel.receiveAsFlow()
+
+    init {
+        startEmailWorker()
+    }
 
     fun onSortOrderSelected(sortOrder: SortOrder) = viewModelScope.launch {
         preferencesManager.updateSortOrder(sortOrder)
@@ -79,8 +89,19 @@ class ColeccionesViewModel @ViewModelInject constructor(
         articlesDao.insertCol(coleccion)
     }
 
+    private fun startEmailWorker() {
+        val workManager = WorkManager.getInstance(applicationContext)
+        val constrains = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        val emailRequest = PeriodicWorkRequest.Builder(EmailWorker::class.java, 1, TimeUnit.DAYS)
+            .setConstraints(constrains)
+            .build()
+        workManager.enqueue(emailRequest)
+    }
+
     private fun getListData(uri: Uri): List<String>? {
-        return try{
+        return try {
             val file = applicationContext.contentResolver.openInputStream(uri)
             val inputStreamReader = InputStreamReader(file)
             BufferedReader(inputStreamReader).readLines()

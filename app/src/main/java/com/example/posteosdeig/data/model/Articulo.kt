@@ -33,7 +33,9 @@ data class Coleccion(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
     val name: String,
     val branch: String,
-    var isMarked: Boolean = false,
+    val postDate: Long,
+    var isMarked: Boolean = postDate != 0L,
+    val isSent: Boolean = false,
     val createdAt: Long = System.currentTimeMillis()
 ) : Parcelable {
 
@@ -55,6 +57,6 @@ data class ColeccionWithArticulos(
         for (articulo in article) {
             lista += (articulo.toString() + "\n")
         }
-        return "Coleccion: ${coleccion.name} \nARTICULOS: \n $lista"
+        return "Coleccion: ${coleccion.name} \nArticulos: \n$lista"
     }
 }

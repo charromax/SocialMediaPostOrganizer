@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Canvas
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -23,7 +22,6 @@ import com.example.posteosdeig.R
 import com.example.posteosdeig.data.SortOrder
 import com.example.posteosdeig.data.model.ColeccionWithArticulos
 import com.example.posteosdeig.databinding.FragmentCollectionsBinding
-import com.example.posteosdeig.util.JavaMailAPI
 import com.example.posteosdeig.util.exhaustive
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,7 +38,6 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
     private val viewModel: ColeccionesViewModel by viewModels()
     private var removedPosition = 0
     private var removedCol: ColeccionWithArticulos? = null
-    private val colsForEmail = arrayListOf<ColeccionWithArticulos>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -184,9 +181,6 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
                 }.exhaustive
             }
         }
-        viewModel.htmlFile.observe(viewLifecycleOwner) {
-            sendEmail(it, coleccionesAdapter)
-        }
     }
 
 
@@ -213,41 +207,9 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
                 viewModel.onSortOrderSelected(SortOrder.BY_NAME)
                 true
             }
-            R.id.send_email -> {
-                if (colsForEmail.isNotEmpty()) {
-                    viewModel.loadEmail()
-                }
-                true
-            }
             else -> super.onOptionsItemSelected(item)
         }
 
-    }
-
-    private fun sendEmail(emailFile: String, adapter: ColeccionesAdapter) {
-        if (emailFile.isNotBlank()) {
-            var message = ""
-            colsForEmail.forEach {
-                message += (it.toString() + "\n")
-            }
-//            emailFile.replace("{Coleccion}", "Coleccion: ${colsForEmail[0].coleccion.name}")
-//            emailFile.replace("{Articulo0}", "Coleccion: ${colsForEmail[0].article[0].toString()}")
-//            emailFile.replace("{Articulo1}", "Coleccion: ${colsForEmail[0].article[1].toString()}")
-//            emailFile.replace("{Articulo2}", "Coleccion: ${colsForEmail[0].article[2].toString()}")
-            val api = JavaMailAPI(
-                requireContext(), "hola tuti", message, "quadriniana@gmail.com"
-            ).execute()
-            Snackbar.make(
-                requireView(),
-                getString(R.string.email_sent_message),
-                Snackbar.LENGTH_SHORT
-            ).show()
-            colsForEmail
-                .map { it.coleccion.isMarked = false }
-            colsForEmail.clear()
-            adapter.notifyDataSetChanged()
-
-        }
     }
 
     private fun openFile() {
@@ -283,14 +245,4 @@ class ColeccionesFragment : Fragment(R.layout.fragment_collections),
         viewModel.onCollectionSelected(coleccionWithArticulos)
     }
 
-    override fun onCollectionMarked(col: ColeccionWithArticulos): Boolean {
-
-        if (col.coleccion.isMarked) colsForEmail.add(col) else if (col.coleccion.isMarked.not()
-            && colsForEmail.find { it.coleccion.id == col.coleccion.id } != null
-        ) {
-            colsForEmail.remove(col)
-        }
-        Log.i(TAG, "onCollectionMarked: $colsForEmail")
-        return true
-    }
 }

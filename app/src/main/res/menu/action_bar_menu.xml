@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/send_email"
-        android:icon="@drawable/ic_email_24"
-        android:title="Enviar correo"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/add_collection"
         android:icon="@drawable/ic_baseline_create_new_folder_24"
         android:title="Nueva Coleccion"

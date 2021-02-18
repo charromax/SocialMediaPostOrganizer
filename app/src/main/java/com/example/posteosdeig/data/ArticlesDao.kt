@@ -16,12 +16,16 @@ interface ArticlesDao {
         }
 
     @Transaction
-    @Query("SELECT * FROM collections_table ORDER BY createdAt DESC")
+    @Query("SELECT * FROM collections_table ORDER BY postDate DESC")
     fun getCollectionsWithArticlesByDate(): Flow<List<ColeccionWithArticulos>>
 
     @Transaction
     @Query("SELECT * FROM collections_table ORDER BY name")
     fun getCollectionsWithArticlesByName(): Flow<List<ColeccionWithArticulos>>
+
+    @Transaction
+    @Query("SELECT * FROM collections_table WHERE isMarked = 1 ORDER BY name")
+    fun getCollectionsMarked(): List<ColeccionWithArticulos>
 
     @Query("SELECT * FROM collections_table")
     fun getAllCollections(): Flow<List<Coleccion>>

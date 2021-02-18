@@ -43,6 +43,8 @@ android {
 }
 
 dependencies {
+    def work_version = "2.5.0"
+
     // Default dependencies
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     implementation "androidx.core:core-ktx:$ktxVersion"
@@ -79,6 +81,8 @@ dependencies {
     kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hiltAndroidXVersion"
     kapt "androidx.hilt:hilt-compiler:$hiltAndroidXVersion"
+    implementation 'androidx.hilt:hilt-work:1.0.0-alpha03'
+    kapt 'androidx.hilt:hilt-compiler:1.0.0-alpha03'
 
     // DataStore
     implementation "androidx.datastore:datastore-preferences:$dataStoreVersion"
@@ -90,6 +94,9 @@ dependencies {
     implementation files('libs/mail.jar')
     implementation files('libs/activation.jar')
     implementation files('libs/additionnal.jar')
+
+    // WorkManager
+    implementation "androidx.work:work-runtime-ktx:$work_version"
 }
 
 kapt {

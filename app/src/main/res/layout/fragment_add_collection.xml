@@ -71,6 +71,21 @@
             app:layout_constraintTop_toBottomOf="@+id/label1"
             tools:listitem="@layout/item_layout" />
 
+        <ImageButton
+            android:id="@+id/post_date_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="16dp"
+            android:background="@drawable/dialog_background"
+            android:backgroundTint="@color/purple_500"
+            android:padding="4dp"
+            android:src="@drawable/ic_baseline_date_range_24"
+            app:layout_constraintBottom_toTopOf="@+id/label2"
+            app:layout_constraintEnd_toStartOf="@+id/branches_spin"
+            app:layout_constraintStart_toEndOf="@+id/categories_spin"
+            app:layout_constraintTop_toBottomOf="@+id/selected_articles_list" />
+
+
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/categories_spin"
             style="@style/spinnerStyle"

@@ -18,6 +18,7 @@ import com.example.posteosdeig.data.model.Branches
 import com.example.posteosdeig.databinding.FragmentAddCollectionBinding
 import com.example.posteosdeig.util.Categories
 import com.example.posteosdeig.util.exhaustive
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -113,6 +114,11 @@ class AddCollectionFragment : Fragment(R.layout.fragment_add_collection),
             collectionNameText.addTextChangedListener {
                 viewModel.colName = it.toString()
             }
+
+            postDateButton.setOnClickListener {
+                showDatePicker()
+            }
+
             saveCollection.setOnClickListener {
                 selectedArticulosAdapter.clearList()
                 viewModel.onSaveClick(articlesList)
@@ -143,9 +149,30 @@ class AddCollectionFragment : Fragment(R.layout.fragment_add_collection),
                             Snackbar.LENGTH_SHORT
                         ).show()
                     }
+                    AddEditCollectionViewModel.AddColeccionesEvents.OnCancelPicker -> {
+                        Snackbar.make(
+                            binding.root,
+                            "Cancelado",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
                 }.exhaustive
             }
         }
+
+    }
+
+    private fun showDatePicker() {
+        val builder = MaterialDatePicker.Builder.datePicker().also {
+            it.setTitleText("Elige la fecha de posteo")
+        }
+        val picker = builder.build()
+        picker.addOnPositiveButtonClickListener { selectedDate ->
+            Log.i(_TAG, "showDatePicker: $selectedDate")
+            viewModel.postDate =
+                selectedDate + (1000 * 60 * 60 * 24) //Add a day in ms bc for some reason calendar returns one day before
+        }
+        picker.show(childFragmentManager, "date_picker")
 
     }
 

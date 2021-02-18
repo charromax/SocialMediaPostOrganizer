@@ -1,13 +1,16 @@
 package com.example.posteosdeig.ui.colecciones
 
 import android.content.Context
+import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.posteosdeig.R
 import com.example.posteosdeig.data.model.ColeccionWithArticulos
 import com.example.posteosdeig.databinding.CollectionItemBinding
 import com.example.posteosdeig.ui.addarticulo.ArticulosAdapter
@@ -33,19 +36,26 @@ class ColeccionesAdapter(private val context: Context, private val listener: OnC
         fun bind(col: ColeccionWithArticulos) {
             binding.apply {
 
-                root.setOnLongClickListener(View.OnLongClickListener {
-                    col.coleccion.isMarked = !col.coleccion.isMarked
-                    notifyItemChanged(adapterPosition)
-                    listener.onCollectionMarked(col)
-                })
                 with(col) {
                     titleText.text = coleccion.name
                     creationDate?.text = coleccion.formattedDate
                     branchLabel.text = coleccion.branch
-                    if (coleccion.isMarked) {
+                    if (coleccion.isMarked && coleccion.isSent.not()) {
                         isMarkedIcon.visibility = View.VISIBLE
-                    } else {
-                        isMarkedIcon.visibility = View.GONE
+                        isMarkedIcon.setColorFilter(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.delete_color
+                            ), PorterDuff.Mode.SRC_ATOP
+                        )
+                    } else if (coleccion.isMarked.not() && coleccion.isSent) {
+                        isMarkedIcon.visibility = View.VISIBLE
+                        isMarkedIcon.setColorFilter(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.sport_color
+                            ), PorterDuff.Mode.SRC_ATOP
+                        )
                     }
                 }
 
@@ -73,7 +83,6 @@ class ColeccionesAdapter(private val context: Context, private val listener: OnC
 
     interface OnClickListener {
         fun onCollectionSelected(coleccionWithArticulos: ColeccionWithArticulos)
-        fun onCollectionMarked(col: ColeccionWithArticulos): Boolean
     }
 
     class DiffCallback : DiffUtil.ItemCallback<ColeccionWithArticulos>() {

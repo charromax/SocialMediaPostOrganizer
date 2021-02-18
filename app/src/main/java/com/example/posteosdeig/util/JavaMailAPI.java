@@ -19,13 +19,10 @@ import static com.example.posteosdeig.ui.colecciones.ColeccionesFragmentKt.sPWD;
 
 public class JavaMailAPI extends AsyncTask<Void, Void, Void> {
 
-    private Context context;
     private Session session;
     private String subject, message, email;
 
     public JavaMailAPI(Context context, String subject, String message, String email) {
-        this.context = context;
-        this.session = session;
         this.subject = subject;
         this.message = message;
         this.email = email;
@@ -56,5 +53,12 @@ public class JavaMailAPI extends AsyncTask<Void, Void, Void> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void sendMail(Context context, String subject, String message, String email) {
+        JavaMailAPI api = new JavaMailAPI(
+                context, subject, message, email
+        );
+        api.execute();
     }
 }
