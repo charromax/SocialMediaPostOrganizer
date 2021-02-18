@@ -1,4 +1,4 @@
-package com.example.posteosdeig.data
+package com.example.posteosdeig.di
 
 import android.content.Context
 import android.os.Build
@@ -7,9 +7,11 @@ import androidx.annotation.RequiresApi
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.example.posteosdeig.data.ArticlesDao
 import com.example.posteosdeig.util.JavaMailAPI
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.collect
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.ZoneId
@@ -33,11 +35,13 @@ class EmailWorker @AssistedInject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun doWork(): Result {
         Log.i(TAG, "doWork: worker started...")
-        var message = DEFAULT_MESSAGE
+        var message =
+            DEFAULT_MESSAGE
         val today = ZonedDateTime.now(ZoneId.of(ZONE_ID))
 
-        if (today.dayOfWeek == DayOfWeek.THURSDAY) {
+        if (today.dayOfWeek == DayOfWeek.MONDAY) {
             val list = articlesDao.getCollectionsMarked()
+            val allCollections = articlesDao.getCollectionsWithArticlesByName()
 
             if (list.isNullOrEmpty().not()) {
                 list.forEach { col ->
@@ -57,6 +61,24 @@ class EmailWorker @AssistedInject constructor(
                         Log.i(TAG, "doWork: coleccion updated")
                     }
                 }
+                // Article recycling
+
+                allCollections.collect { cols ->
+                    if (cols.isNotEmpty()) {
+                        cols.forEach {
+                            val creationDate = Instant.ofEpochMilli(it.coleccion.postDate).atZone(
+                                ZoneId.of(ZONE_ID)
+                            )
+                            if (today.dayOfYear - creationDate.dayOfYear >= 60) {
+                                it.article.forEach { art ->
+                                    Log.i(TAG, "doWork: releasing articles")
+                                    articlesDao.removeFromCollection(art)
+                                }
+                            }
+
+                        }
+                    }
+                }
             } else {
                 Log.i(TAG, "doWork: list empty")
                 return Result.failure()
@@ -67,7 +89,7 @@ class EmailWorker @AssistedInject constructor(
             return Result.failure()
         }
 
-        if (message.length > 83) {
+        if (message.length > 83) {      // length of default string message
 
             JavaMailAPI.sendMail(
                 applicationContext,

@@ -5,7 +5,6 @@ import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.example.posteosdeig.data.ArticlesDao
-import com.example.posteosdeig.data.EmailWorker
 
 class EmailWorkerFactory(private val articlesDao: ArticlesDao) : WorkerFactory() {
 
@@ -14,6 +13,10 @@ class EmailWorkerFactory(private val articlesDao: ArticlesDao) : WorkerFactory()
         workerClassName: String,
         workerParameters: WorkerParameters
     ): ListenableWorker? {
-        return EmailWorker(appContext, workerParameters, articlesDao)
+        return EmailWorker(
+            appContext,
+            workerParameters,
+            articlesDao
+        )
     }
 }

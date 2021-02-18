@@ -12,12 +12,12 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.example.posteosdeig.data.ArticlesDao
-import com.example.posteosdeig.data.EmailWorker
 import com.example.posteosdeig.data.PreferencesManager
 import com.example.posteosdeig.data.SortOrder
 import com.example.posteosdeig.data.model.Articulo
 import com.example.posteosdeig.data.model.Coleccion
 import com.example.posteosdeig.data.model.ColeccionWithArticulos
+import com.example.posteosdeig.di.EmailWorker
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
